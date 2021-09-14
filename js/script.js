@@ -1,4 +1,5 @@
 const form = document.querySelector('form');
+const name = document.querySelector('#name');
 const otherJob = document.querySelector('#other-job-role');
 const jobRole = document.querySelector('#title');
 const shirtColor = document.querySelector('#color');
@@ -13,11 +14,11 @@ const paypal = document.querySelector('#paypal');
 const bitcoin = document.querySelector('#bitcoin');
 const activityCheckboxes = document.querySelectorAll('#activities input');
 
-// focus on name text field when page loads
-document.querySelector('#name').focus();
+// focus on name input field when page loads
+name.focus();
 
 //*** JOB ROLE ***//
-// hide other job role text field when page loads
+// hide other job role field when page loads
 otherJob.style.display = 'none';
 
 // hide/show job role dropdown depending on job role selected
@@ -102,45 +103,37 @@ paymentType.addEventListener('change', () => {
 });
 
 //*** VALIDATION ***//
+
 //*** helper functions to verify form fields ***//
-const isValidName = (name) => {
-  // see readme section 1.1
-  return /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
-}
+// see readme section 1.1
+const isValidName = name => /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
 
-const isValidEmail = (email) => {
-  // see readme section 1.2
-  return /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email);
-}
+// see readme section 1.2
+const isValidEmail = email => /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email);
 
-const isValidActivity = () => {
-  // check for selected activities by ensuring the totalCost is greater than 0
-  return totalCost > 0 ? true : false;
-}
+// check for selected activities by ensuring the totalCost is greater than 0
+const isValidActivity = () => totalCost > 0 ? true : false;
 
-const isValidCredit = (ccNumber) => {
-  // a number between 13 and 16 digits
-  return /^\d{13,16}$/.test(ccNumber);
-}
+// a number between 13 and 16 digits
+const isValidCredit = ccNumber => /^\d{13,16}$/.test(ccNumber);
 
-const isValidZip = (zipCode) => {
-  // a number exactly 5 digits
-  return /^\d{5}$/.test(zipCode);
-}
+// a number exactly 5 digits
+const isValidZip = zipCode => /^\d{5}$/.test(zipCode);
 
-const isValidCvv = (cvv) => {
-  // a number exactly 3 digits
-  return /^\d{3}$/.test(cvv);
-}
+// a number exactly 3 digits
+const isValidCvv = cvv => /^\d{3}$/.test(cvv);
 
 // form validation to run when the form is submitted
 form.addEventListener('submit', (e) => {
-  const name = document.querySelector('#name');
   const email = document.querySelector('#email');
   const activitiesHint = document.querySelector('#activities-hint');
   const ccNumber = document.querySelector('#cc-num');
   const zip = document.querySelector('#zip');
   const cvv = document.querySelector('#cvv');
+
+  // errorMessages object contains multiple error messages to display for the type of input error the user is experiencing
+  // the validate property executes the helper function to validate the corresponding field
+  // this makes the customErrorValidation function below more concise and scalable
   const errorMessages = {
     name: {
       validate: isValidName(name.value),
@@ -154,20 +147,33 @@ form.addEventListener('submit', (e) => {
     }
   }
 
+  // isValid and notValid are functions that apply styling based on whether a field is valid or not
+  const isValid = hint => {
+    hint.parentElement.classList.remove('not-valid');
+    hint.parentElement.classList.add('valid');
+    hint.style.display = 'none';
+  }
+
+  const notValid = hint => {
+    e.preventDefault();
+    hint.parentElement.classList.add('not-valid');
+    hint.parentElement.classList.remove('valid');
+    hint.style.display = 'block';
+  }
+
   /**
    * displays/hides form hint based on the validation of a given field
    * 
    * @param (function) helperFunction - the function called to validate a field
-   * @param (HTMLElement) hint - the html element containing the form hint message for the field being validated
+   * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
    */
   const basicValidation = (helperFunction, hint) => {
     // if helperFunction returns false, display a hint on the page
     if (!helperFunction) {
-      e.preventDefault();
-      hint.style.display = 'block';
+      notValid(hint);
     } else {
       // if helperFunction returns true, hide the hint on the page
-      hint.style.display = 'none';
+      isValid(hint);
     }
   }
 
@@ -175,23 +181,21 @@ form.addEventListener('submit', (e) => {
    * validates a field value and displays/hides a custom error message based on the type of validation error
    * 
    * @param (string) fieldValue - the string entered into the field by the user
-   * @param (HTMLElement) hint - the html element containing the form hint message for the field being validated
-   * @param (object) type - either name or email; refers to an object that validates a field and contains custom error messages
+   * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
+   * @param (object) field - either name or email; refers to an object that validates a field and contains custom error messages
    */
-  const customErrorValidation = (fieldValue, hint, type) => {
-    // check if field is valide by calling its validation helper function stored in the type object
-    if (!type.validate) {
-      e.preventDefault();
+  const customErrorValidation = (fieldValue, hint, field) => {
+    if (!field.validate) {
+      notValid(hint);
       if (fieldValue === '') {
         // message to display if field is blank
-        hint.innerText = type.blankMsg;
+        hint.innerText = field.blankMsg;
       } else {
         // message to display if field is formatted incorrectly
-        hint.innerText = type.formatMsg;
+        hint.innerText = field.formatMsg;
       }
-      hint.style.display = 'block';
     } else {
-      hint.style.display = 'none';
+      isValid(hint);
     }
   }
 
