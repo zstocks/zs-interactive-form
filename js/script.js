@@ -135,25 +135,20 @@ const isValidCvv = (cvv) => {
 
 // form validation to run when the form is submitted
 form.addEventListener('submit', (e) => {
-  const name = document.querySelector('#name').value;
-  const nameHint = document.querySelector('#name-hint');
-  const email = document.querySelector('#email').value;
-  const emailHint = document.querySelector('#email-hint');
+  const name = document.querySelector('#name');
+  const email = document.querySelector('#email');
   const activitiesHint = document.querySelector('#activities-hint');
-  const ccNumber = document.querySelector('#cc-num').value;
-  const ccHint = document.querySelector('#cc-hint');
-  const zip = document.querySelector('#zip').value;
-  const zipHint = document.querySelector('#zip-hint');
-  const cvv = document.querySelector('#cvv').value;
-  const cvvHint = document.querySelector('#cvv-hint');
+  const ccNumber = document.querySelector('#cc-num');
+  const zip = document.querySelector('#zip');
+  const cvv = document.querySelector('#cvv');
   const errorMessages = {
     name: {
-      validate: isValidName(name),
+      validate: isValidName(name.value),
       blankMsg: 'Name field cannot be blank',
       formatMsg: 'Please enter first and last name using only letters separated by a space'
     },
     email: {
-      validate: isValidEmail(email),
+      validate: isValidEmail(email.value),
       blankMsg: 'Email field cannot be blank',
       formatMsg: 'Email address must be formatted correctly. ex: name@domain.com'
     }
@@ -201,23 +196,24 @@ form.addEventListener('submit', (e) => {
   }
 
   // validate name and show appropriate error message
-  customErrorValidation(name, nameHint, errorMessages.name);
+  customErrorValidation(name.value, name.nextElementSibling, errorMessages.name);
 
   // validate email and show appropriate error message
-  customErrorValidation(email, emailHint, errorMessages.email);
+  customErrorValidation(email.value, email.nextElementSibling, errorMessages.email);
 
   // validate activity
   basicValidation(isValidActivity(), activitiesHint);
 
   // validate credit card info only if Credit Card is the selected payment method
   if (paymentType.value === 'credit-card') {
-    basicValidation(isValidCredit(ccNumber), ccHint);
-    basicValidation(isValidZip(zip), zipHint);
-    basicValidation(isValidCvv(cvv), cvvHint);
+    basicValidation(isValidCredit(ccNumber.value), ccNumber.nextElementSibling);
+    basicValidation(isValidZip(zip.value), zip.nextElementSibling);
+    basicValidation(isValidCvv(cvv.value), cvv.nextElementSibling);
   }
 });
 
 //*** ACCESSIBILITY ***//
+// listen for focus and blur events on each of the activity checkboxes
 for (const checkbox of activityCheckboxes) {
   // if the focus event is detected, add the class .focus to its parent label
   checkbox.addEventListener('focus', () => {
