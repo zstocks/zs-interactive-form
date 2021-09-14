@@ -11,6 +11,8 @@ const payOptions = paymentType.querySelectorAll('option');
 const credit = document.querySelector('#credit-card');
 const paypal = document.querySelector('#paypal');
 const bitcoin = document.querySelector('#bitcoin');
+const activityCheckboxes = document.querySelectorAll('#activities input');
+const activityLabels = document.querySelectorAll('#activities label');
 
 // focus on name text field when page loads
 document.querySelector('#name').focus();
@@ -215,3 +217,17 @@ form.addEventListener('submit', (e) => {
     basicValidation(isValidCvv(cvv), cvvHint);
   }
 });
+
+//*** ACCESSIBILITY ***//
+// listen for focus and blur events on all activity checkboxes
+for (let i = 0; i < activityCheckboxes.length; i++) {
+  // if the focus event is detected, add the class .focus to its corresponding label
+  activityCheckboxes[i].addEventListener('focus', () => {
+    activityLabels[i].className = 'focus';
+  });
+
+  // if the blur event is detected, remove the class .focus to its corresponding label
+  activityCheckboxes[i].addEventListener('blur', () => {
+    activityLabels[i].classList.remove('focus');
+  });
+}

@@ -3,6 +3,7 @@
 
 1. Conditional Error Messaging: 
  Display the appropriate error message/hint-text when a form field is not valid on form submission.
+ All RegEx expressions were developed and tested using RegEx Pal (https://www.regexpal.com/).
 
  1.1 Name
   Acceptable values: ^[a-zA-Z]+ [a-zA-Z]+$
