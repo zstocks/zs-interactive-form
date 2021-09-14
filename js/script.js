@@ -103,11 +103,13 @@ paymentType.addEventListener('change', () => {
 //*** VALIDATION ***//
 //*** helper functions to verify form fields ***//
 const isValidName = (name) => {
-  return /^[a-zA-Z]+ [a-zA-Z]+$/.test(name); // see readme section 1.1
+  // see readme section 1.1
+  return /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
 }
 
 const isValidEmail = (email) => {
-  return /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email); // see readme section 1.2
+  // see readme section 1.2
+  return /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email);
 }
 
 const isValidActivity = () => {
@@ -130,6 +132,7 @@ const isValidCvv = (cvv) => {
   return /^\d{3}$/.test(cvv);
 }
 
+// form validation to run when the form is submitted
 form.addEventListener('submit', (e) => {
   const name = document.querySelector('#name').value;
   const nameHint = document.querySelector('#name-hint');
@@ -145,34 +148,50 @@ form.addEventListener('submit', (e) => {
   const errorMessages = {
     name: {
       validate: isValidName(name),
-      blank: 'Name field cannot be blank',
-      format: 'Please enter first and last name using only letters separated by a space'
+      blankMsg: 'Name field cannot be blank',
+      formatMsg: 'Please enter first and last name using only letters separated by a space'
     },
     email: {
       validate: isValidEmail(email),
-      blank: 'Email field cannot be blank',
-      format: 'Email address must be formatted correctly. ex: name@domain.com'
+      blankMsg: 'Email field cannot be blank',
+      formatMsg: 'Email address must be formatted correctly. ex: name@domain.com'
     }
   }
 
+  /**
+   * displays/hides form hint based on the validation of a given field
+   * 
+   * @param (function) helperFunction - the function called to validate a field
+   * @param (HTMLElement) hint - the html element containing the form hint message for the field being validated
+   */
   const basicValidation = (helperFunction, hint) => {
     // if helperFunction returns false, display a hint on the page
     if (!helperFunction) {
       e.preventDefault();
       hint.style.display = 'block';
     } else {
-      // if helperFunction returns true, hide the hint-text
+      // if helperFunction returns true, hide the hint on the page
       hint.style.display = 'none';
     }
   }
 
+  /**
+   * validates a field value and displays/hides a custom error message based on the type of validation error
+   * 
+   * @param (string) fieldValue - the string entered into the field by the user
+   * @param (HTMLElement) hint - the html element containing the form hint message for the field being validated
+   * @param (object) type - either name or email; refers to an object that validates a field and contains custom error messages
+   */
   const customErrorValidation = (fieldValue, hint, type) => {
+    // check if field is valide by calling its validation helper function stored in the type object
     if (!type.validate) {
       e.preventDefault();
       if (fieldValue === '') {
-        hint.innerText = type.blank;
+        // message to display if field is blank
+        hint.innerText = type.blankMsg;
       } else {
-        hint.innerText = type.format;
+        // message to display if field is formatted incorrectly
+        hint.innerText = type.formatMsg;
       }
       hint.style.display = 'block';
     } else {
