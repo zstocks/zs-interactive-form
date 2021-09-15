@@ -75,6 +75,7 @@ shirtDesign.addEventListener('change', () => {
 activities.addEventListener('change', (e) => {
  const activity = e.target;
  const activityCost = parseInt(activity.getAttribute('data-cost'));
+ const activityTimeSlot = activity.getAttribute('data-day-and-time');
 
  // Increase/decrease total activities' cost based on user checkbox selection
  if (activity.checked) {
@@ -85,6 +86,23 @@ activities.addEventListener('change', (e) => {
  
  // update the total cost on the page
  activitiesCost.innerText = `Total: $${totalCost}`;
+
+ // handle activities with the same day and time as the selected activity
+ for (const checkbox of activityCheckboxes) {
+  // ensure the checkbox in question is not the activity checked/unchecked by the user
+  if (checkbox !== activity) {
+    const conflictingTimeSlot = checkbox.getAttribute('data-day-and-time');
+    // disable any activities with the same time as the activity that was checked
+    if (activityTimeSlot === conflictingTimeSlot && activity.checked) {
+      checkbox.setAttribute('disabled', 'true');
+      checkbox.parentElement.classList.add('disabled');
+    // enable any activities with the same time as the activity that was unchecked
+    } else if (activityTimeSlot === conflictingTimeSlot && !activity.checked) {
+      checkbox.removeAttribute('disabled');
+      checkbox.parentElement.classList.remove('disabled');
+    }
+  }
+ }
 });
 
 //*** PAYMENT INFO ***//
