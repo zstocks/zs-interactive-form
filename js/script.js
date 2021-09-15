@@ -9,10 +9,27 @@ let totalCost = 0;
 const activitiesCost = document.querySelector('#activities-cost');
 const paymentType = document.querySelector('#payment');
 const payOptions = paymentType.querySelectorAll('option');
-const credit = document.querySelector('#credit-card');
-const paypal = document.querySelector('#paypal');
-const bitcoin = document.querySelector('#bitcoin');
+const paymentMethods = [
+    document.querySelector('#credit-card'), 
+    document.querySelector('#paypal'), 
+    document.querySelector('#bitcoin')
+  ];
 const activityCheckboxes = document.querySelectorAll('#activities input');
+
+/**
+ * Updates the page to show only the selected payment method
+ * 
+ * @param (string) selectedMethod - the payment method selected by the user
+ */
+const updatePayMethod = selectedMethod => {
+  for (let i = 0; i < paymentMethods.length; i++) {
+    if (selectedMethod === paymentMethods[i].id) {
+      paymentMethods[i].style.display = 'block';
+    } else {
+      paymentMethods[i].style.display = 'none';
+    }
+  }
+}
 
 // focus on name input field when page loads
 name.focus();
@@ -71,28 +88,6 @@ activities.addEventListener('change', (e) => {
 });
 
 //*** PAYMENT INFO ***//
-
-/**
- * Updates the page to show only the selected payment method
- * 
- * @param (string) selectedMethod - the payment method selected by the user
- */
-const updatePayMethod = (selectedMethod) => {
-  if (selectedMethod === 'credit-card') {
-    credit.style.display = 'block';
-    paypal.style.display = 'none';
-    bitcoin.style.display = 'none';
-  } else if (selectedMethod === 'paypal') {
-    paypal.style.display = 'block';
-    credit.style.display = 'none';
-    bitcoin.style.display = 'none';
-  } else if (selectedMethod === 'bitcoin') {
-    bitcoin.style.display = 'block';
-    paypal.style.display = 'none';
-    credit.style.display = 'none';
-  }
-}
-
 // by default, select the 'credit card' payment method and update the form to show only the selected payment method
 payOptions[1].selected = 'selected';
 updatePayMethod(paymentType.value);
@@ -103,8 +98,6 @@ paymentType.addEventListener('change', () => {
 });
 
 //*** VALIDATION ***//
-
-//*** helper functions to verify form fields ***//
 // see readme section 1.1
 const isValidName = name => /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
 
@@ -131,9 +124,7 @@ form.addEventListener('submit', (e) => {
   const zip = document.querySelector('#zip');
   const cvv = document.querySelector('#cvv');
 
-  // errorMessages object contains multiple error messages to display for the type of input error the user is experiencing
-  // the validate property executes the helper function to validate the corresponding field
-  // this makes the customErrorValidation function below more concise and scalable
+  // see readme section 1
   const errorMessages = {
     name: {
       validate: isValidName(name.value),
@@ -147,7 +138,11 @@ form.addEventListener('submit', (e) => {
     }
   }
 
-  // isValid and notValid are functions that apply styling based on whether a field is valid or not
+  /**
+   * isValid and notValid apply/remove styling depending on whether user input is valid or not.
+   * 
+   * @param (HTMLElement) hint - html element containing the hing message
+   */
   const isValid = hint => {
     hint.parentElement.classList.remove('not-valid');
     hint.parentElement.classList.add('valid');
@@ -162,7 +157,7 @@ form.addEventListener('submit', (e) => {
   }
 
   /**
-   * displays/hides form hint based on the validation of a given field
+   * displays/hides form hint based on the validation of a given field. For fields with only one error message.
    * 
    * @param (function) helperFunction - the function called to validate a field
    * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
@@ -178,11 +173,11 @@ form.addEventListener('submit', (e) => {
   }
 
   /**
-   * validates a field value and displays/hides a custom error message based on the type of validation error
+   * validates a field value and displays/hides a custom error message based on the type of validation error. For fields with custom error messages.
    * 
    * @param (string) fieldValue - the string entered into the field by the user
    * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
-   * @param (object) field - either name or email; refers to an object that validates a field and contains custom error messages
+   * @param (object) field - either name or email; refers to an object containing validation helper function and custom error messages
    */
   const customErrorValidation = (fieldValue, hint, field) => {
     if (!field.validate) {
