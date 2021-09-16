@@ -1,5 +1,6 @@
 const form = document.querySelector('form');
 const name = document.querySelector('#name');
+const email = document.querySelector('#email'); 
 const otherJob = document.querySelector('#other-job-role');
 const jobRole = document.querySelector('#title');
 const shirtColor = document.querySelector('#color');
@@ -134,45 +135,68 @@ const isValidZip = zipCode => /^\d{5}$/.test(zipCode);
 // a number exactly 3 digits
 const isValidCvv = cvv => /^\d{3}$/.test(cvv);
 
+/**
+ * isValid and notValid apply/remove styling depending on whether user input is valid or not.
+ * 
+ * @param (HTMLElement) hint - html element containing the hing message
+ */
+const isValid = input => {
+  input.parentElement.classList.remove('not-valid');
+  input.parentElement.classList.add('valid');
+  input.nextElementSibling.style.display = 'none';
+}
+
+const notValid = input => {
+  input.parentElement.classList.add('not-valid');
+  input.parentElement.classList.remove('valid');
+  input.nextElementSibling.style.display = 'block';
+}
+
+// see readme section 1
+const errorMessages = {
+  name: {
+    blankMsg: 'Name field cannot be blank',
+    formatMsg: 'Please enter first and last name using only letters separated by a space'
+  },
+  email: {
+    blankMsg: 'Email field cannot be blank',
+    formatMsg: 'Email address must be formatted correctly. ex: name@domain.com'
+  }
+}
+
+const customErrorValidation = (valid, input, errorMessages, e) => {
+  if (!valid) {
+    if (e.type === 'submit') {
+      e.preventDefault();
+    }
+    notValid(input);
+    if (input.value === '') {
+      // message to display if field is blank
+      input.nextElementSibling.innerText = errorMessages.blankMsg;
+    } else {
+      // message to display if field is formatted incorrectly
+      input.nextElementSibling.innerText = errorMessages.formatMsg;
+    }
+  } else {
+    isValid(input);
+  }
+}
+
+name.addEventListener('keyup', (e) => {
+  customErrorValidation(isValidName(name.value), name, errorMessages.name, e);
+});
+
+email.addEventListener('keyup', (e) => {
+  customErrorValidation(isValidEmail(email.value), email, errorMessages.email, e);
+});
+
 // form validation to run when the form is submitted
-form.addEventListener('submit', (e) => {
-  const email = document.querySelector('#email');
-  const activitiesHint = document.querySelector('#activities-hint');
+form.addEventListener('submit', (e) => { 
   const ccNumber = document.querySelector('#cc-num');
   const zip = document.querySelector('#zip');
   const cvv = document.querySelector('#cvv');
 
-  // see readme section 1
-  const errorMessages = {
-    name: {
-      validate: isValidName(name.value),
-      blankMsg: 'Name field cannot be blank',
-      formatMsg: 'Please enter first and last name using only letters separated by a space'
-    },
-    email: {
-      validate: isValidEmail(email.value),
-      blankMsg: 'Email field cannot be blank',
-      formatMsg: 'Email address must be formatted correctly. ex: name@domain.com'
-    }
-  }
-
-  /**
-   * isValid and notValid apply/remove styling depending on whether user input is valid or not.
-   * 
-   * @param (HTMLElement) hint - html element containing the hing message
-   */
-  const isValid = hint => {
-    hint.parentElement.classList.remove('not-valid');
-    hint.parentElement.classList.add('valid');
-    hint.style.display = 'none';
-  }
-
-  const notValid = hint => {
-    e.preventDefault();
-    hint.parentElement.classList.add('not-valid');
-    hint.parentElement.classList.remove('valid');
-    hint.style.display = 'block';
-  }
+  errorMessages.name.validate = isValidName(name.value);
 
   /**
    * displays/hides form hint based on the validation of a given field. For fields with only one error message.
@@ -180,52 +204,31 @@ form.addEventListener('submit', (e) => {
    * @param (function) helperFunction - the function called to validate a field
    * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
    */
-  const basicValidation = (helperFunction, hint) => {
-    // if helperFunction returns false, display a hint on the page
-    if (!helperFunction) {
-      notValid(hint);
+  const basicValidation = (valid, input) => {
+    // if valid returns false, display a hint on the page
+    if (!valid) {
+      e.preventDefault();
+      notValid(input);
     } else {
-      // if helperFunction returns true, hide the hint on the page
-      isValid(hint);
-    }
-  }
-
-  /**
-   * validates a field value and displays/hides a custom error message based on the type of validation error. For fields with custom error messages.
-   * 
-   * @param (string) fieldValue - the string entered into the field by the user
-   * @param (HTMLElement) hint - the html element containing the hint message for the field being validated
-   * @param (object) field - either name or email; refers to an object containing validation helper function and custom error messages
-   */
-  const customErrorValidation = (fieldValue, hint, field) => {
-    if (!field.validate) {
-      notValid(hint);
-      if (fieldValue === '') {
-        // message to display if field is blank
-        hint.innerText = field.blankMsg;
-      } else {
-        // message to display if field is formatted incorrectly
-        hint.innerText = field.formatMsg;
-      }
-    } else {
-      isValid(hint);
+      // if valid returns true, hide the hint on the page
+      isValid(input);
     }
   }
 
   // validate name and show appropriate error message
-  customErrorValidation(name.value, name.nextElementSibling, errorMessages.name);
+  customErrorValidation(isValidName(name.value), name, errorMessages.name, e);
 
   // validate email and show appropriate error message
-  customErrorValidation(email.value, email.nextElementSibling, errorMessages.email);
+  customErrorValidation(isValidEmail(email.value), email, errorMessages.email, e);
 
   // validate activity
-  basicValidation(isValidActivity(), activitiesHint);
+  basicValidation(isValidActivity(), activitiesCost);
 
   // validate credit card info only if Credit Card is the selected payment method
   if (paymentType.value === 'credit-card') {
-    basicValidation(isValidCredit(ccNumber.value), ccNumber.nextElementSibling);
-    basicValidation(isValidZip(zip.value), zip.nextElementSibling);
-    basicValidation(isValidCvv(cvv.value), cvv.nextElementSibling);
+    basicValidation(isValidCredit(ccNumber.value), ccNumber);
+    basicValidation(isValidZip(zip.value), zip);
+    basicValidation(isValidCvv(cvv.value), cvv);
   }
 });
 
