@@ -22,7 +22,7 @@ const paymentMethods = {
 const errorMessages = {
   name: {
     blankMsg: 'Name field cannot be blank',
-    formatMsg: 'Please enter first and last name using only letters separated by a space'
+    formatMsg: 'Please enter your first (and last) name using letters only'
   },
   email: {
     blankMsg: 'Email field cannot be blank',
@@ -48,8 +48,8 @@ const updatePayMethod = selectedMethod => {
 }
 
 // helper functions to validate form fields
-// two words consisting of letters separated by a space
-const isValidName = name => /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
+// One word consisting of letters only, with the option to add last name
+const isValidName = name => /^[a-zA-Z]+ ?[a-zA-Z]*\s*$/.test(name);
 
 // basic email format in the form of: string@string.[a-z]
 const isValidEmail = email => /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email);
