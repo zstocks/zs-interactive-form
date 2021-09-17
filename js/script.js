@@ -1,11 +1,12 @@
 const form = document.querySelector('form');
 const name = document.querySelector('#name');
 const email = document.querySelector('#email'); 
-const otherJob = document.querySelector('#other-job-role');
 const jobRole = document.querySelector('#title');
-const shirtColor = document.querySelector('#color');
+const otherJob = document.querySelector('#other-job-role');
 const shirtDesign = document.querySelector('#design');
+const shirtColor = document.querySelector('#color');
 const activities = document.querySelector('#activities');
+const activityCheckboxes = document.querySelectorAll('#activities input');
 let totalCost = 0;
 const activitiesCost = document.querySelector('#activities-cost');
 const ccNumber = document.querySelector('#cc-num');
@@ -13,14 +14,11 @@ const zip = document.querySelector('#zip');
 const cvv = document.querySelector('#cvv');
 const paymentType = document.querySelector('#payment');
 const payOptions = paymentType.querySelectorAll('option');
-const paymentMethods = [
-    document.querySelector('#credit-card'), 
-    document.querySelector('#paypal'), 
-    document.querySelector('#bitcoin')
-  ];
-const activityCheckboxes = document.querySelectorAll('#activities input');
-
-// object containing error messages for fields with conditional error messaging capabilities
+const paymentMethods = {
+    credit: document.querySelector('#credit-card'), 
+    paypal: document.querySelector('#paypal'), 
+    bitcoin: document.querySelector('#bitcoin')
+  };
 const errorMessages = {
   name: {
     blankMsg: 'Name field cannot be blank',
@@ -30,7 +28,7 @@ const errorMessages = {
     blankMsg: 'Email field cannot be blank',
     formatMsg: 'Email address must be formatted correctly. ex: name@domain.com'
   }
-}
+};
 
 //*** FUNCTIONS ***//
 /**
@@ -39,19 +37,21 @@ const errorMessages = {
  * @param (string) selectedMethod - the payment method selected by the user
  */
 const updatePayMethod = selectedMethod => {
-  for (let i = 0; i < paymentMethods.length; i++) {
-    if (selectedMethod === paymentMethods[i].id) {
-      paymentMethods[i].style.display = 'block';
+
+  for (const method in paymentMethods) {
+    if (selectedMethod === paymentMethods[method].id) {
+      paymentMethods[method].style.display = 'block';
     } else {
-      paymentMethods[i].style.display = 'none';
+      paymentMethods[method].style.display = 'none';
     }
   }
 }
 
-// see readme section 1.1
+// helper functions to validate form fields
+// two words consisting of letters separated by a space
 const isValidName = name => /^[a-zA-Z]+ [a-zA-Z]+$/.test(name);
 
-// see readme section 1.2
+// basic email format in the form of: string@string.[a-z]
 const isValidEmail = email => /^[^@\s]+@[^@.\s]+\.[a-z]+$/i.test(email);
 
 // check for selected activities by ensuring the totalCost is greater than 0
@@ -226,7 +226,7 @@ email.addEventListener('keyup', (e) => {
   customErrorValidation(isValidEmail(email.value), email, errorMessages.email, e);
 });
 
-paymentMethods[0].addEventListener('keyup', (e) => {
+paymentMethods.credit.addEventListener('keyup', (e) => {
   basicValidation(isValidCredit(ccNumber.value), ccNumber, e);
   basicValidation(isValidZip(zip.value), zip, e);
   basicValidation(isValidCvv(cvv.value), cvv, e);

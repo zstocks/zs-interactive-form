@@ -1,39 +1,32 @@
 # zs-interactive-form
  An interactive form using JavaScript
-
+*****
+*****
 1. Conditional Error Messaging: 
+   
+   1.1 Description
 
- How it functions:
-   a) Each field with custom error messages enabled (name, email) has a helper validation function and custom error messages stored in an object (errorMessages) as properties.
-   b) The customErrorValidation function takes a field argument, which denotes the object to be accessed inside the function.
-   c) Inside the customErrorValidation function, the specified field's object properties are accessed to validate user input and display custom error messages based on some condition (field is blank, field is formatted improperly, etc).
+      In this application, conditional error messaging has two components, the errorMessages object, and the customErrorValidation() function.
+         a) The errorMessages object contains custom error messages for each field with conditional error messaging enabled. Using an object for this allows for easy scaling if there was ever a need enable conditional error messaging for more fields, or to add additional custom error messages.
+         b) The customErrorValidation() function determines which error message should be accessed in the errorMessages object and displays that message in the hint element on the page.
 
- Note: All RegEx expressions were developed and tested using RegEx Pal (https://www.regexpal.com/).
+      Currently, conditional error messaging is enabled for the following fields:
+         1. Name
+         2. Email
 
- 1.1 Name
-  Acceptable values: ^[a-zA-Z]+ [a-zA-Z]+$
-  The name field accepts a first and last name separated by a space, consisting of letters.
+      Note: All RegEx expressions used in validation helper functions were developed and tested using RegEx Pal (https://www.regexpal.com/).
+*****
+*****
+2. Real-time Validation:
 
-  Error messages:
-  a) The customErrorValidation function first checks to see if the name field is empty.
-     If empty, hint-text will read: Name field cannot be blank
+   2.1 Description
 
-  b) Next, the customErrorValidation function ensures the user is only entering two words consisting of letters separated by a space. 
-     If this criteria is not met, the hint-text will read: Please enter first and last name using only letters separated by a space
+      The real-time validation feature works by running the basicValidation() or customErrorValidation() functions inside keyup event listeners attached to text input elements. The validation function to run depends on whether the field being validated has conditional error messaging enabled. Everytime a key is released, the associated field will be validated, and the appropriate styling will be shown on the page.
 
- 1.2 Email
-  The email field accepts only email addresses that follow the format: string@string.com
-  Here is the logic for the regex expression: ^[^@\s]+@[^@.\s]+\.[a-z]+$
-   1. [^@\s]+ - accepts any string of characters that are not '@' or whitespace
-   2. @ - followed by '@' 
-   3. [^@.\s]+ - followed by any string of characters that are not '@', '.', or whitespace
-   4. \.[a-z] - followed by '.' and a string made of letters strictly a-z
+      The activities section will be validated everytime a box is checked or unchecked in that section. 
 
-   Error messages:
-   a) The customErrorValidation function first checks to see if the email field is empty. 
-      If empty, hint-text will read: Email field cannot be blank
-
-   b) Next, the customErrorValidation function ensures the email address meets the required format.
-      If the required format is not met, hint-text will read: Email address must be formatted correctly. ex: name@domain.com
-
-
+      Currently, real-time validation is enabled for the following fields:
+         1. Name
+         2. Email
+         3. Activities
+         4. Credit card information (credit card number, zip code, and cvv)
